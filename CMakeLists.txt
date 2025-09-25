@@ -6,23 +6,28 @@ project(CMakeSFMLProject LANGUAGES CXX)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-include(FetchContent)
-# подключение либы через FetchContent
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 3.0.2
-    GIT_SHALLOW ON
-    EXCLUDE_FROM_ALL
-    SYSTEM)
-FetchContent_MakeAvailable(SFML)
+# include(FetchContent)
+# FetchContent_Declare(SFML
+#     GIT_REPOSITORY https://github.com/SFML/SFML.git
+#     GIT_TAG 3.0.2
+#     GIT_SHALLOW ON
+#     EXCLUDE_FROM_ALL
+#     SYSTEM)
+# FetchContent_MakeAvailable(SFML)
 
-# This assumes the SDL source is available in libs/SDL
-# Подключение либы из искодников
-add_subdirectory(lib/SDL EXCLUDE_FROM_ALL)
-
-add_executable(main src/main.cpp src/sfml_test.cpp src/sdl_test.cpp)
+add_executable(main src/main.cpp)
 
 target_compile_features(main PRIVATE cxx_std_17)
 
-target_link_libraries(main PRIVATE SFML::Graphics)
-target_link_libraries(main PRIVATE SDL3::SDL3)
+target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/include)
+
+target_compile_definitions(main PRIVATE SFML_STATIC)
+set(SFML_3_0_2_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/lib)
+target_link_libraries(main PRIVATE
+    ${SFML_3_0_2_PATH}/sfml-graphics-s-d.lib
+    ${SFML_3_0_2_PATH}/sfml-window-s-d.lib
+    ${SFML_3_0_2_PATH}/sfml-system-s-d.lib
+    opengl32
+    winmm
+    gdi32
+    ${SFML_3_0_2_PATH}/freetype.lib)
